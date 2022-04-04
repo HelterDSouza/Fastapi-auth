@@ -33,7 +33,7 @@ class AppSettings(BaseAppSettings):
     MAX_CONNECTION_COUNT: int = 10
     MIN_CONNECTION_COUNT: int = 10
 
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
+    @validator("SQLALCHEMY_DATABASE_URI", pre=True, check_fields=False)
     def assemble_db_connection(cls, v: str, values: dict[str, Any]) -> str:
         if isinstance(v, str):
             return v
