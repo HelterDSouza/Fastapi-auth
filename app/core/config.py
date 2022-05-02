@@ -1,4 +1,3 @@
-from distutils.command.config import config
 from functools import lru_cache
 
 from app.core.settings.app import AppSettings
