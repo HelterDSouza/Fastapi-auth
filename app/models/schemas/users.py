@@ -7,5 +7,9 @@ class UserInCreate(BaseModel):
     password: str
 
 
+class UserWithTokenInResponse(User):
+    token: str
+
+
 class UserInResponse(BaseModel):
-    user: User
+    user: UserWithTokenInResponse

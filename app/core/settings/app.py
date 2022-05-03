@@ -22,6 +22,9 @@ class AppSettings(BaseAppSettings):
     # Security
     SECRET_KEY: SecretStr
 
+    # Token Prefix
+    JWT_TOKEN_PREFIX: str = "Token"
+
     # Postgresql
     POSTGRES_SERVER: str
     POSTGRES_USER: str
