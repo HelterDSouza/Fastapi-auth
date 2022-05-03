@@ -1,15 +1,18 @@
-from app.models.commons import CoreModel, DateTimeModelMixin, IDModelMixin
-from app.utils.security import HashPassword
-from pydantic import BaseModel, EmailStr
+from app.models.commons import (
+    CoreModel,
+    DateTimeModelMixin,
+    IDModelMixin,
+    StatusModelMixin,
+)
+from app.services.security import HashPassword
+from pydantic import EmailStr
 
 
 class User(CoreModel):
     email: EmailStr
-    is_active: bool = True
-    is_superuser: bool = False
 
 
-class UserInDB(IDModelMixin, DateTimeModelMixin, User):
+class UserInDB(IDModelMixin, DateTimeModelMixin, User, StatusModelMixin):
     salt: str = ""
     hashed_password: str = ""
 

@@ -12,6 +12,11 @@ class DateTimeModelMixin(BaseModel):
         return value or datetime.datetime.now()
 
 
+class StatusModelMixin(BaseModel):
+    is_active: bool = True
+    is_superuser: bool = False
+
+
 class IDModelMixin(BaseModel):
     id_: int = Field(0, alias="id")
 
