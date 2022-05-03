@@ -18,3 +18,7 @@ class UserWithTokenInResponse(User):
 
 class UserInResponse(BaseModel):
     user: UserWithTokenInResponse
+
+
+class UserInUpdate(BaseModel):
+    email: EmailStr | None = None
