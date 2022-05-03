@@ -2,7 +2,12 @@ from app.models.domain.users import User
 from pydantic import BaseModel, EmailStr
 
 
-class UserInCreate(BaseModel):
+class UserInLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserInCreate(UserInLogin):
     email: EmailStr
     password: str
 

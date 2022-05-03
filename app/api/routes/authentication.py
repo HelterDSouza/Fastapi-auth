@@ -1,11 +1,16 @@
 from app.api.dependencies.database import get_repository
+from app.core.config import get_app_settings
+from app.core.settings.app import AppSettings
+from app.db.erros import UserDoesNotExit
 from app.db.repositories.users import UsersRepository
 from app.models.schemas.users import (
     UserInCreate,
+    UserInLogin,
     UserInResponse,
-    UserInUpdate,
     UserWithTokenInResponse,
 )
+from app.resources import string
+from app.services import jwt
 from app.services.authentication import check_email_is_taken
 from fastapi import APIRouter, Body, Depends, HTTPException
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
@@ -13,34 +18,39 @@ from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 router = APIRouter()
 
 
+
+
 @router.post(
     "/",
     response_model=UserInResponse,
-    name="users:register-new-user",
+    name="auth:register",
     status_code=HTTP_201_CREATED,
 )
-async def register_new_user(
-    new_user: UserInCreate = Body(...),
+async def register(
+    new_user: UserInCreate = Body(..., embed=True, alias="user"),
     user_repo: UsersRepository = Depends(get_repository(UsersRepository)),
+    settings: AppSettings = Depends(get_app_settings),
 ) -> UserInResponse:
 
     # Check if passed email is already in use
     if await check_email_is_taken(user_repo, new_user.email):
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,
-            detail="Email is already taken",
+            detail=string.EMAIL_TAKEN,
         )
 
     user = await user_repo.register_new_user(new_user=new_user)
 
     # Generate JWT
-    token = "Generated Token"
+    token = jwt.create_access_token_for_user(
+        user, str(settings.SECRET_KEY.get_secret_value())
+    )
 
-    return UserInResponse(
+    user_response = UserInResponse(
         user=UserWithTokenInResponse(
             **user.dict(),
             token=token,
         )
     )
 
-
+    return user_response
