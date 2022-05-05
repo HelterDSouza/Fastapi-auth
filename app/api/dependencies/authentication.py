@@ -6,6 +6,7 @@ from app.core.settings.app import AppSettings
 from app.db.erros import UserDoesNotExit
 from app.db.repositories.users import UsersRepository
 from app.models.domain.users import User
+from app.resources import string
 from app.services import jwt
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import APIKeyHeader
@@ -22,7 +23,7 @@ class ApiKeyHeader(APIKeyHeader):
         except StarletteHTTPException as original_auth_exc:
             raise HTTPException(
                 status_code=original_auth_exc.status_code,
-                detail="Authentication required",
+                detail=string.AUTHENTICATION_REQUIRED,
             )
 
 
@@ -62,11 +63,11 @@ def _get_authorization_header(
         token_prefix, token = api_key.split(" ")
     except ValueError:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="wrong token prefix"
+            status_code=status.HTTP_403_FORBIDDEN, detail=string.WRONG_TOKEN_PREFIX
         )
     if token_prefix != settings.JWT_TOKEN_PREFIX:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="wrong token prefix"
+            status_code=status.HTTP_403_FORBIDDEN, detail=string.WRONG_TOKEN_PREFIX
         )
 
     return token
@@ -83,14 +84,14 @@ async def _get_current_user(
         )
     except ValueError:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Malformed_payload"
+            status_code=status.HTTP_403_FORBIDDEN, detail=string.MALFORMED_PAYLOAD
         )
 
     try:
         return await user_repo.get_user_by_email(email=email)
     except UserDoesNotExit:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Malformed_payload"
+            status_code=status.HTTP_403_FORBIDDEN, detail=string.MALFORMED_PAYLOAD
         )
 
 

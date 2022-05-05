@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from app.models.domain.users import User
 from app.models.schemas.jwt import JWTMeta, JWTUser
-from pydantic import EmailStr, ValidationError
+from pydantic import ValidationError
 
 import jwt
 

@@ -12,11 +12,11 @@ class UsersRepository(BaseRepository):
 
         super().__init__(conn)
 
-    async def get_user_by_email(self, *, email: EmailStr) -> UserInDB:
-        user_row = await queries.get_user_by_email(self.connection, email=email)
+    async def get_user_by_email(self, *, email: EmailStr | str) -> UserInDB:
+        user_record = await queries.get_user_by_email(self.connection, email=email)
 
-        if user_row:
-            return UserInDB(**user_row)
+        if user_record:
+            return UserInDB(**user_record)
 
         raise UserDoesNotExit(f"user with email {email} does not exist")
 
@@ -27,7 +27,9 @@ class UsersRepository(BaseRepository):
         async with self.connection.transaction():
             user_row = await queries.create_new_user(
                 self.connection,
-                **user.dict(),
+                email=user.email,
+                salt=user.salt,
+                hashed_password=user.hashed_password,
             )
 
         return user.copy(update=dict(user_row))
@@ -37,17 +39,19 @@ class UsersRepository(BaseRepository):
     async def update_user(
         self,
         *,
-        user: User,
-        user_update: UserInUpdate,
+        current_user: User,
+        updated_user: UserInUpdate,
     ) -> UserInDB:
-        user_in_db = await self.get_user_by_email(email=user.email)
 
-        user_in_db.email = user_update.email or user_in_db.email
+        user_record = await self.get_user_by_email(email=current_user.email)
+
+        user_record.email = updated_user.email or user_record.email
 
         async with self.connection.transaction():
-            user_in_db.updated_at = await queries.update_user_by_email(
+            user_record.updated_at = await queries.update_user_by_email(
                 self.connection,
-                email=user.email,
-                new_email=user_in_db.email,
+                email=current_user.email,
+                new_email=user_record.email,
             )
-        return user_in_db
+
+        return user_record

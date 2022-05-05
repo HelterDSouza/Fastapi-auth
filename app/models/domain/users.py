@@ -4,7 +4,7 @@ from app.models.commons import (
     IDModelMixin,
     StatusModelMixin,
 )
-from app.services.security import HashPassword
+from app.services import hash_password
 from pydantic import EmailStr
 
 
@@ -17,9 +17,9 @@ class UserInDB(IDModelMixin, DateTimeModelMixin, User, StatusModelMixin):
     hashed_password: str = ""
 
     def check_password(self, password: str) -> bool:
-        return HashPassword.verify_password(self.salt + password, self.hashed_password)
+        return hash_password.verify_password(self.salt + password, self.hashed_password)
 
     def change_password(self, password: str) -> None:
 
-        self.salt = HashPassword.generate_salt()
-        self.hashed_password = HashPassword.get_password_hash(self.salt + password)
+        self.salt = hash_password.generate_salt()
+        self.hashed_password = hash_password.get_password_hash(self.salt + password)

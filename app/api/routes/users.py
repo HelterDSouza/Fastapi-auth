@@ -53,8 +53,8 @@ async def update_current_user(
             )
 
     user = await users_repo.update_user(
-        user=current_user,
-        user_update=user_update,
+        current_user=current_user,
+        updated_user=user_update,
     )
 
     token = jwt.create_access_token_for_user(

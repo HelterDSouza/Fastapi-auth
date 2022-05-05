@@ -1,6 +1,7 @@
+from email.message import EmailMessage
+
 from asyncpg import Connection, Record
 from pydantic import EmailStr
-
 
 class UserQueriesMixin:
     async def create_new_user(
@@ -10,8 +11,18 @@ class UserQueriesMixin:
         salt: str,
         hashed_password: str,
     ) -> Record: ...
+    async def update_user_by_email(
+        self,
+        conn: Connection,
+        email: EmailStr,
+        new_email: EmailStr,
+    ) -> Record: ...
+    async def get_user_by_email(
+        self,
+        conn: Connection,
+        email: EmailStr,
+    ) -> Record: ...
 
-    async def update_user(self,conn:Connection,email:EmailStr,new_email:EmailStr)
 class Queries(UserQueriesMixin): ...
 
 queries: Queries
