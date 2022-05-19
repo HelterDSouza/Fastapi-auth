@@ -16,6 +16,7 @@ aiosql = "^3.4.1"
 asyncpg = "^0.25.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 PyJWT = "^2.3.0"
+alembic_utils = "^0.7.7"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
