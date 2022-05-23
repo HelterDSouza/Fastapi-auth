@@ -1,3 +1,4 @@
+from alembic_utils import pg_trigger
 from app.db.base_class import Base
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.sql import func
@@ -17,3 +18,20 @@ class Users(Base):
         server_default=func.now(),
         onupdate=func.current_timestamp(),
     )
+
+
+update_user_modtime = pg_trigger.PGTrigger(
+    schema="public",
+    signature="update_user_modtime",
+    on_entity="public.users",
+    definition="""
+        BEFORE UPDATE ON public.users
+        FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column()
+    """,
+)
+
+
+from sqlalchemy import select
+
+a = select(Users.email).where(Users.email == "helterdaniel")
+print(a)

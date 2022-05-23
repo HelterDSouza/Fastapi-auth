@@ -1,7 +1,11 @@
 from logging.config import fileConfig
 
 from alembic import context
+from alembic_utils.replaceable_entity import register_entities
 from app.core.config import get_app_settings
+from app.db import Base
+from app.db.functions import update_updated_at_column
+from app.db.tables.user import update_user_modtime
 from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
@@ -17,8 +21,9 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app.db import Base
 
+
+register_entities([update_updated_at_column, update_user_modtime])
 target_metadata = Base.metadata
 # target_metadata = None
 
