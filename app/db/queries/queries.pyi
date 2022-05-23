@@ -10,6 +10,8 @@ class UserQueriesMixin:
         email: EmailStr,
         salt: str,
         hashed_password: str,
+        is_superuser: bool,
+        is_active: bool,
     ) -> Record: ...
     async def update_user_by_email(
         self,

@@ -23,19 +23,18 @@ class UsersRepository(BaseRepository):
     async def register_new_user(self, *, new_user: UserInCreate) -> UserInDB:
         user = UserInDB(email=new_user.email)
         user.change_password(new_user.password)
-
         async with self.connection.transaction():
             user_row = await queries.create_new_user(
                 self.connection,
                 email=user.email,
                 salt=user.salt,
                 hashed_password=user.hashed_password,
+                is_active=user.is_active,
+                is_superuser=user.is_superuser,
             )
 
         return user.copy(update=dict(user_row))
 
-    # !FIX: Updated_at não atualizando com a nova data
-    # !FIX: Atualizar usuario com o usuario atual, autenticação primeiro
     async def update_user(
         self,
         *,
